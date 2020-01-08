@@ -60,7 +60,10 @@ def main():
     for task in todoist_tasks.values():
         if not is_task_completed(task) or task["id"] in tasks_actioned:
             continue
-        org, repo, issue_number = get_github_issue_details(task["content"])
+        issue_details = get_github_issue_details(task["content"])
+        if not issue_details:
+            continue
+        org, repo, issue_number = issue_details
         issue = get_issue(me, org, repo, issue_number)
         me_assigned = me.login in {assignee.login for assignee in issue.assignees}
         if not me_assigned:

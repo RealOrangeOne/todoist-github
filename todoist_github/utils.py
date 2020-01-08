@@ -19,6 +19,7 @@ def get_github_task(content) -> Optional[str]:
             parsed_url.path
         ):
             return url
+    return None
 
 
 def get_github_issue_details(content):
@@ -27,6 +28,8 @@ def get_github_issue_details(content):
         return
     parsed_url = urlparse(url)
     match = GITHUB_ISSUE_PR_RE.search(parsed_url.path)
+    if not match:
+        return
     return match.group(1), match.group(2), match.group(4)
 
 
