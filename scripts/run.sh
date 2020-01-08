@@ -4,4 +4,4 @@ set -e
 
 PATH=env/bin:${PATH}
 
-python3 todoist-github/cli.py
+python3 -m todoist-github
