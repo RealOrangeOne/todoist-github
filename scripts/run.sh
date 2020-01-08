@@ -4,4 +4,4 @@ set -e
 
 PATH=env/bin:${PATH}
 
-python3 -m todoist-github
+python3 -m todoist_github
