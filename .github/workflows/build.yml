@@ -17,5 +17,3 @@ jobs:
       run: pip install -r dev-requirements.txt
     - name: Run tests
       run: bash ./scripts/test.sh
-    - name: Build docker image
-      run: docker build .
