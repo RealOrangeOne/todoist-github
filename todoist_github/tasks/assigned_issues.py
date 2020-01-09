@@ -3,22 +3,16 @@ import datetime
 from dateutil.relativedelta import relativedelta
 
 from todoist_github.clients import github, todoist
-from todoist_github.utils import get_github_issue_details, get_github_task, get_issue
-from todoist_github.utils.todoist import is_task_completed, issue_to_task_name
-
-
-def get_relevant_todoist_tasks():
-    todoist.items.sync()
-    tasks = {}
-    for task in todoist.items.all():
-        github_task = get_github_task(task["content"])
-        if github_task:
-            tasks[github_task] = task
-    return tasks
+from todoist_github.utils import get_github_issue_details, get_issue
+from todoist_github.utils.todoist import (
+    get_relevant_todoist_tasks,
+    is_task_completed,
+    issue_to_task_name,
+)
 
 
 def assigned_issues():
-    todoist_tasks = get_relevant_todoist_tasks()
+    todoist_tasks = get_relevant_todoist_tasks(todoist)
     relevant_since = datetime.datetime.now() - relativedelta(
         weeks=30
     )  # TODO: Make this a sane number
