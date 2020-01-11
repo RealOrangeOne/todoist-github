@@ -12,6 +12,7 @@ def prs_to_review():
     for issue in github.search_issues(search_string):
         task = relevant_tasks.get(issue.html_url)
         if not task and issue.state == "open":
+            print("Creating", issue)
             task = todoist.items.add(pr_to_task_name(issue))
         if not task:
             continue
