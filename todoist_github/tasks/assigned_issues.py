@@ -26,10 +26,10 @@ def assigned_issues():
         if not task:
             continue
         tasks_actioned.append(task["id"])
-        if assigned_issue == "closed" and not is_task_completed(task):
+        if assigned_issue.state == "closed" and not is_task_completed(task):
             print("completing", assigned_issue)
             task.complete()
-        if is_task_completed(task):
+        elif assigned_issue.state == "open" and is_task_completed(task):
             print("uncompleting task", assigned_issue)
             task.uncomplete()
         if task["content"] != issue_to_task_name(assigned_issue):
