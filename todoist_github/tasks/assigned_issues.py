@@ -21,6 +21,7 @@ def assigned_issues():
     for assigned_issue in me.get_issues(state="all", since=relevant_since):
         task = todoist_tasks.get(assigned_issue.html_url)
         if not task and assigned_issue.state == "open":
+            print("creating", assigned_issue)
             task = todoist.items.add(issue_to_task_name(assigned_issue))
         if not task:
             continue
