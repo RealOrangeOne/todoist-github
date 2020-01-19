@@ -1,6 +1,7 @@
+import logging
+
 from todoist_github.clients import github, todoist
 from todoist_github.utils.todoist import get_relevant_todoist_tasks, pr_to_task_name
-import logging
 
 SEARCH_STRING = "is:pr review-requested:{username} archived:false"
 

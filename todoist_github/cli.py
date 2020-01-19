@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
 import argparse
-import time
-import coloredlogs
 import logging
+import time
+
+import coloredlogs
 
 from .tasks import ALL_TASKS
 
