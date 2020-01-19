@@ -6,6 +6,7 @@ import time
 
 import coloredlogs
 
+from .clients import todoist
 from .tasks import ALL_TASKS
 
 
@@ -19,6 +20,8 @@ def run_tasks():
     for task in ALL_TASKS:
         logging.info("Executing %s", task.__name__)
         task()
+    logging.debug("Committing tasks")
+    todoist.commit()
 
 
 def main():
