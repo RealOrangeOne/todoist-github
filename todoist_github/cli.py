@@ -2,6 +2,8 @@
 
 import argparse
 import time
+import coloredlogs
+import logging
 
 from .tasks import ALL_TASKS
 
@@ -14,11 +16,16 @@ def get_args():
 
 def run_tasks():
     for task in ALL_TASKS:
-        print("Executing", task.__name__)
+        logging.info("Executing %s", task.__name__)
         task()
 
 
 def main():
+    coloredlogs.install(
+        level=logging.INFO,
+        fmt="%(asctime)s %(levelname)s %(message)s",
+        datefmt="%H:%M:%S",
+    )
     args = get_args()
     run_tasks()
     if args.interval:

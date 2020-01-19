@@ -1,4 +1,5 @@
 import datetime
+import logging
 
 from dateutil.relativedelta import relativedelta
 
@@ -21,19 +22,19 @@ def assigned_issues():
     for assigned_issue in me.get_issues(state="all", since=relevant_since):
         task = todoist_tasks.get(assigned_issue.html_url)
         if not task and assigned_issue.state == "open":
-            print("creating", assigned_issue)
+            logging.info("Creating '%s'", assigned_issue.title)
             task = todoist.items.add(issue_to_task_name(assigned_issue))
         if not task:
             continue
         tasks_actioned.append(task["id"])
         if assigned_issue.state == "closed" and not is_task_completed(task):
-            print("completing", assigned_issue)
+            logging.info("Completing '%s'", assigned_issue.title)
             task.complete()
         elif assigned_issue.state == "open" and is_task_completed(task):
-            print("uncompleting task", assigned_issue)
+            logging.info("Uncompleting task '%s'", assigned_issue.title)
             task.uncomplete()
         if task["content"] != issue_to_task_name(assigned_issue):
-            print("updating issue name for", assigned_issue)
+            logging.info("Updating issue name for '%s'", assigned_issue.title)
             task.update(content=issue_to_task_name(assigned_issue))
         if assigned_issue.milestone and assigned_issue.milestone.due_on:
             task.update(
@@ -50,5 +51,5 @@ def assigned_issues():
         issue = get_issue(me, org, repo, issue_number)
         me_assigned = me.login in {assignee.login for assignee in issue.assignees}
         if not me_assigned:
-            print("Deleting", issue)
+            logging.warn("Deleting '%s'", issue.title)
             task.delete()
