@@ -1,6 +1,11 @@
+import os
+from itertools import chain
+
 from github.Issue import Issue
 
 from . import get_github_task
+
+SUB_PROJECT_NAMES = ["Tasks", "GitHub"]
 
 
 def get_issue_link(issue_or_pr) -> str:
@@ -27,3 +32,30 @@ def get_relevant_todoist_tasks(todoist):
         if github_task:
             tasks[github_task] = task
     return tasks
+
+
+def get_project_for_issue(issue: Issue, todoist_projects: dict):
+    repo_name = issue.repository.full_name.split("/")[1]
+    search_terms = [
+        issue.repository.full_name.split("/")[0],
+    ]
+    if issue.repository.organization:
+        search_terms.insert(0, issue.repository.organization.name)
+    elif issue.repository.owner:
+        search_terms.insert(0, issue.repository.owner.login)
+        search_terms.insert(0, issue.repository.owner.name)
+    search_terms.append(repo_name)  # Always be at the end, as it's the least specific
+
+    for search_term in search_terms:
+        if search_term.lower() in todoist_projects:
+            found_project = todoist_projects[search_term.lower()]
+            for project in todoist_projects.values():
+                if project["parent_id"] != found_project["id"]:
+                    continue
+                for sub_project_name in chain(SUB_PROJECT_NAMES, [repo_name]):
+                    if project["name"].lower() == sub_project_name.lower():
+                        return project
+            return found_project
+    return todoist_projects.get(
+        os.environ.get("DEFAULT_TODOIST_PROJECT_NAME", "").lower()
+    )

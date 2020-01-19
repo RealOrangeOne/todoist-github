@@ -6,6 +6,7 @@ from dateutil.relativedelta import relativedelta
 from todoist_github.clients import github, todoist
 from todoist_github.utils import get_github_issue_details, get_issue
 from todoist_github.utils.todoist import (
+    get_project_for_issue,
     get_relevant_todoist_tasks,
     is_task_completed,
     issue_to_task_name,
@@ -14,6 +15,10 @@ from todoist_github.utils.todoist import (
 
 def assigned_issues():
     todoist_tasks = get_relevant_todoist_tasks(todoist)
+    todoist.projects.sync()
+    todoist_projects = {
+        project["name"].lower(): project for project in todoist.state["projects"]
+    }
     relevant_since = datetime.datetime.now() - relativedelta(
         weeks=30
     )  # TODO: Make this a sane number
@@ -36,10 +41,15 @@ def assigned_issues():
         if task["content"] != issue_to_task_name(assigned_issue):
             logging.info("Updating issue name for '%s'", assigned_issue.title)
             task.update(content=issue_to_task_name(assigned_issue))
+
         if assigned_issue.milestone and assigned_issue.milestone.due_on:
             task.update(
                 date_string=assigned_issue.milestone.due_on.strftime("%d/%m/%Y")
             )
+        todoist_project = get_project_for_issue(assigned_issue, todoist_projects)
+        if todoist_project and task["project_id"] != todoist_project["id"]:
+            logging.info("Updating project for '%s'", assigned_issue.title)
+            task.move(project_id=todoist_project["id"])
 
     for task in todoist_tasks.values():
         if not is_task_completed(task) or task["id"] in tasks_actioned:
