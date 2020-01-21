@@ -25,3 +25,18 @@ Tasks are added to projects based on the repository organisation / owner or repo
 Task due dates are based off their milestone.
 
 Once an issue is closed / PR merged, the task is completed. If you're unassigned, the issue is deleted.
+
+## Example `docker-compose.yml`
+
+```yml
+version: '3'
+services:
+  todoist-github:
+    image: theorangeone/todoist-github:latest
+    container_name: todoist-github
+    restart: unless-stopped
+    command: python3 -m todoist_github --interval 900
+    environment:
+      - TODOIST_TOKEN=
+      - GITHUB_TOKEN=
+```
