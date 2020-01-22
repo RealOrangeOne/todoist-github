@@ -20,7 +20,7 @@ def run_tasks():
     for task in ALL_TASKS:
         logging.info("Executing %s", task.__name__)
         task()
-    logging.debug("Committing tasks")
+    logging.info("Committing tasks")
     todoist.commit()
 
 
