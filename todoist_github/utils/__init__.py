@@ -3,6 +3,7 @@ from typing import Optional
 from urllib.parse import urlparse
 
 from github.Issue import Issue
+from github.PullRequest import PullRequest
 from urlextract import URLExtract
 
 GITHUB_ISSUE_PR_RE = re.compile(r"\/(.+?)\/(.+?)\/(pull|issues)\/(\d+?)$")
@@ -38,3 +39,9 @@ def get_issue(me, org, repo, issue_num):
         "GET", f"/repos/{org}/{repo}/issues/{issue_num}"
     )
     return Issue(me._requester, headers, data, completed=True)
+
+
+def get_my_review(me, pr: PullRequest):
+    for review in pr.get_reviews().reversed:
+        if review.user.login == me.login:
+            return review

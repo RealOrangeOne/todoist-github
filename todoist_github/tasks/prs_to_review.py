@@ -1,9 +1,11 @@
 import logging
 
 from todoist_github.clients import github, todoist
+from todoist_github.utils import get_my_review
 from todoist_github.utils.todoist import (
     get_project_for_issue,
     get_relevant_todoist_tasks,
+    is_task_completed,
     pr_to_task_name,
 )
 
@@ -27,6 +29,7 @@ def prs_to_review():
         if not task:
             continue
         tasks_actioned.append(task["id"])
+        pr = issue.as_pull_request()
         if task["content"] != pr_to_task_name(issue):
             logging.info("Updating issue name for '%s'", issue.title)
             task.update(content=pr_to_task_name(issue))
@@ -35,3 +38,15 @@ def prs_to_review():
         if todoist_project and task["project_id"] != todoist_project["id"]:
             logging.info("Updating project for '%s'", issue.title)
             task.move(project_id=todoist_project["id"])
+
+        my_review = get_my_review(me, pr)
+        if my_review:
+            if my_review.commit_id == pr.head.sha and not is_task_completed(task):
+                logging.info("Completing '%s'", issue.title)
+                task.complete()
+            elif is_task_completed(task):
+                logging.info("Un-completing '%s'", issue.title)
+                task.uncomplete()
+        if pr.merged and not is_task_completed(task):
+            logging.info("Deleting '%s'", issue.title)
+            task.delete()
