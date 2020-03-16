@@ -1,4 +1,4 @@
-pygithub==1.46
+pygithub==1.47
 python-dateutil==2.8.1
 todoist-python==8.1.1
 urlextract==0.14.0
